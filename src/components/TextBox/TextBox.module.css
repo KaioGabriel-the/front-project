@@ -1,0 +1,35 @@
+.textBox {
+  background: #ffffff;              /* fundo branco */
+  border: 1px solid #e5e7eb;        /* cinza claro */
+  border-radius: 12px;              /* bordas arredondadas */
+  padding: 8px 12px;                /* respiro interno */
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04); /* sombra leve */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.textBox:focus-within {
+  border-color: #4caf50;            /* destaque ao focar (verde) */
+  box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
+}
+
+.textBox input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #111827;                   /* texto escuro */
+  padding: 6px 0;                   /* altura confortável */
+}
+
+.textBox input::placeholder {
+  color: #9ca3af;                   /* placeholder cinza */
+}
+
+/* Acessibilidade: estado desabilitado */
+.textBox input:disabled {
+  color: #6b7280;
+  cursor: not-allowed;
+  opacity: 0.7;
+}

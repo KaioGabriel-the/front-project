@@ -1,11 +1,11 @@
 import './App.css'
-import Ambience from './pages/Ambience'
+import Login from './pages/Login';
 
 function App() {
 
   return (
     <>
-      <Ambience></Ambience>
+      <Login></Login>
     </>
   )
 }

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import TextBox from "../../components/TextBox";
 import styles from "./Login.module.css";
 
@@ -10,7 +11,7 @@ const Login: React.FC = () => {
                 <TextBox placeholder="Username" />
                 <TextBox placeholder="Password" type="password" />
                 <button type="submit">Entrar</button>
-                <a href="">Cadastrar</a>
+                <Link to="/cadastrar">Cadastrar</Link>
             </form>
         </div>
     );

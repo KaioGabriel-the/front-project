@@ -5,15 +5,16 @@ interface DeviceItemProps {
   device?: Device; 
   onAddClick?: (index: number) => void;
   index: number;
+  onToggleState?: (deviceId: number) => void;
 }
 
-const DeviceItem = ({ device, onAddClick, index }: DeviceItemProps) => {
+const DeviceItem = ({ device, onAddClick, index, onToggleState }: DeviceItemProps) => {
   return (
     <div className={styles.gridItem}>
       {device ? (
         // Se a prop 'device' EXISTE, renderiza o item preenchido
         <>
-          <div className={styles.deviceName} title={device.name}> {device.name} </div>
+          <div className={`${styles.deviceName} ${device.status === 'OFF' ? styles.isOff : ''}`} title={device.name} onClick={() => onToggleState?.(device.id)}> {device.name} </div>
           <button className={styles.menuButton}> &#x2261; </button>
         </>
       ) : (

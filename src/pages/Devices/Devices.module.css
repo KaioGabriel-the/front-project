@@ -1,0 +1,78 @@
+.container {
+  padding: 1.5rem 3rem;
+  background: #404040;
+  color: #FFF;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.backButtonLink {
+  background-color: #A4A5A6;
+  color: #404040;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.roomInfo {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.mainContent {
+  text-align: center;
+}
+
+.titleWrapper {
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.titleWrapper h1 {
+  margin: 0.5rem 0;
+  font-size: 2.2rem;
+}
+
+.titleWrapper span {
+  font-size: 0.9rem;
+  color: #A4A5A6;
+}
+
+.deviceGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  row-gap: 1rem;
+  column-gap: 10rem;
+  width: 100%;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.footer a {
+  color: #FFF;
+  text-decoration: none;
+  border: 1px solid white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.footer a:hover {
+  background-color: white;
+  color: #404040;
+}

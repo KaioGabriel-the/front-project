@@ -1,0 +1,100 @@
+.formGroup {
+    margin-bottom: 1.75rem;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 0.7rem;
+    border-radius: 10px;
+    border: 2px solid #458C57;
+    background-color: #FFF;
+    color: #404040;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.radioGroup {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.modalContent h2 {
+    text-align: center;
+    margin-top: 0;
+}
+
+.radioBtn {
+    flex: 1;
+    padding: 0.7rem;
+    border: 2px solid #A4A5A6;
+    background-color: transparent;
+    color: #A4A5A6;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.radioBtn.active {
+    background-color: #88F2A2;
+    color: #404040;
+    border-color: #88F2A2;
+    font-weight: bold;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 19.7rem;
+    margin-top: 1.2rem;
+}
+
+.actions button {
+    padding: 0.6rem 1.4rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cancelBtn {
+    background-color: #00000055;
+    color: white;
+}
+
+.saveBtn {
+    background-color: #458C57;
+    color: white;
+}
+
+.saveBtn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: #404040; 
+  padding: 2rem;
+  border-radius: 8px;
+  color: #FFF;
+  width: 90%;
+  max-width: 500px;
+}

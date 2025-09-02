@@ -20,7 +20,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
   flex: 1; 
-  min-width: 0; 
+  min-width: 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Implementando a transição de estado*/
+}
+
+.deviceName.isOff {
+  background-color: #458c57; /* Verde escuro = Off*/
+  color: #FFF;
 }
 
 .menuButton {

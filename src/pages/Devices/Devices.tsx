@@ -42,6 +42,29 @@ const DevicesPage = () => {
     setSelectedSlotIndex(null); // Limpa o índice para o próximo clique
   };
 
+  /*Função que altera o estado do dispositivo*/
+  const handleToggleState = (deviceId: number) => {
+    setGridSlots(currentSlots => {
+      // Cria uma nova cópia do array para não modificar o estado diretamente
+      const newSlots = [...currentSlots];
+      
+      // Encontra o índice do dispositivo que foi clicado
+      const deviceIndex = newSlots.findIndex(slot => slot?.id === deviceId);
+
+      // Se o dispositivo foi encontrado
+      if (deviceIndex !== -1 && newSlots[deviceIndex]) {
+        // Cria uma cópia do dispositivo para modificar
+        const updatedDevice = { ...newSlots[deviceIndex]! };
+        // Inverte o estado atual
+        updatedDevice.status = updatedDevice.status === 'ON' ? 'OFF' : 'ON';
+        // Coloca o dispositivo atualizado de volta no array
+        newSlots[deviceIndex] = updatedDevice;
+      }
+      
+      return newSlots;
+    });
+  };
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -63,7 +86,8 @@ const DevicesPage = () => {
               key={index}
               index={index}
               device={device || undefined}
-              onAddClick={handleOpenAddModal} 
+              onAddClick={handleOpenAddModal}
+              onToggleState={handleToggleState} 
             />
           ))}
         </div>

@@ -76,3 +76,37 @@
   background-color: white;
   color: #404040;
 }
+
+.mainContent {
+  text-align: center;
+  position: relative;
+}
+
+.legendContainer {
+  position: absolute;
+  top: 0.6rem;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: #FFFFFF; 
+  font-weight: 500; 
+}
+
+.legendItem {
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-left: 0.25rem;
+}
+
+.onItem {
+  background-color: #88F2A2; 
+  color: #404040;           
+}
+
+.offItem {
+  background-color: #458C57; 
+  color: #FFFFFF;           
+}

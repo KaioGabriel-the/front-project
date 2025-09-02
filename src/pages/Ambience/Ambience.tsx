@@ -1,58 +1,85 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Header from "../../components/Header";
-import AmbienceItem from "../../components/AmbienceItem";
-import styles from "./Ambience.module.css";
+import { useState } from 'react';
+import styles from './Ambience.module.css';
+import AddAmbienceModal from '../../components/AddAmbienteModal';
+import ItemAmbience from "../../components/ItemAmibience";
+import { Link } from 'react-router-dom';
 
-interface AmbienceData {
+const MAX_AMBIENCES = 12; // limite de ambientes (ajuste conforme precisar)
+
+export interface Ambience {
   id: number;
   name: string;
 }
 
-const Ambience: React.FC = () => {
-  const navigate = useNavigate();
-  
-  const [ambiences, setAmbiences] = useState<AmbienceData[]>([
-    { id: 1, name: "Sala de Estar" },
-    { id: 2, name: "Cozinha" },
-  ]);
+const AmbiencesPage = () => {
+  const initialState = Array.from({ length: MAX_AMBIENCES }).map(() => null);
 
-  const [nextId, setNextId] = useState(3);
+  const [gridSlots, setGridSlots] = useState<(Ambience | null)[]>(initialState);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
 
-  const handleCreate = () => {
-    navigate("/ambientes/novo"); // leva para a página de criação
+  const handleOpenAddModal = (index: number) => {
+    setSelectedSlotIndex(index);
+    setIsAddModalOpen(true);
   };
 
-  const handleRename = (id: number, newName: string) => {
-    setAmbiences(
-      ambiences.map((a) => (a.id === id ? { ...a, name: newName } : a))
-    );
-  };
+  const handleAddNewAmbience = (name: string) => {
+    if (selectedSlotIndex === null) return;
 
-  const handleDelete = (id: number) => {
-    setAmbiences(ambiences.filter((a) => a.id !== id));
+    const newAmbience: Ambience = {
+      id: Date.now(),
+      name: name,
+    };
+
+    setGridSlots((currentSlots) => {
+      const newSlots = [...currentSlots];
+      newSlots[selectedSlotIndex] = newAmbience;
+      return newSlots;
+    });
+
+    setSelectedSlotIndex(null); // Limpa o índice
   };
 
   return (
     <div className={styles.container}>
-      <Header title="Ambientes" />
+      <header className={styles.header}>
+        <Link to="/home" className={styles.backButtonLink}>
+          &larr; voltar
+        </Link>
+        <p className={styles.pageInfo}>
+          Você está na <strong>página de Ambientes</strong>
+        </p>
+      </header>
 
-      <button onClick={handleCreate} className={styles.createButton}>
-        ➕ Criar Ambiente
-      </button>
+      <main className={styles.mainContent}>
+        <div className={styles.titleWrapper}>
+          <h1>Gerenciar Ambientes</h1>
+          <span>*limite de até {MAX_AMBIENCES} ambientes</span>
+        </div>
 
-      <ul className={styles.list}>
-        {ambiences.map((ambience) => (
-          <AmbienceItem
-            key={ambience.id}
-            ambience={ambience}
-            onRename={handleRename}
-            onDelete={handleDelete}
-          />
-        ))}
-      </ul>
+        <div className={styles.ambienceGrid}>
+          {gridSlots.map((ambience, index) => (
+            <ItemAmbience
+              key={index}
+              index={index}
+              Ambience={ambience || undefined}
+              onAddClick={handleOpenAddModal}
+            />
+          ))}
+        </div>
+      </main>
+
+      <footer className={styles.footer}>
+        <a href="#">Ir para gerenciamento de dispositivos</a>
+      </footer>
+
+      <AddAmbienceModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSave={handleAddNewAmbience}
+      />
     </div>
   );
 };
 
-export default Ambience;
+export default AmbiencesPage;

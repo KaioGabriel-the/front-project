@@ -32,7 +32,6 @@ const AddDeviceModal = ({ isOpen, onClose, onSave }: AddDeviceModalProps) => {
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <h2>Adicionar Novo Dispositivo</h2>
         
-        {/* Formulário */}
         <div className={styles.formGroup}>
           <label htmlFor="deviceName">Nome do Dispositivo</label>
           <input
@@ -60,7 +59,6 @@ const AddDeviceModal = ({ isOpen, onClose, onSave }: AddDeviceModalProps) => {
           </div>
         </div>
 
-        {/* Botões de Ação */}
         <div className={styles.actions}>
           <button className={styles.cancelBtn} onClick={handleClose}>Cancelar</button>
           <button className={styles.saveBtn} onClick={handleSave} disabled={!deviceName.trim()}>Salvar</button>

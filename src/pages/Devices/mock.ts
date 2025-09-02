@@ -1,7 +1,3 @@
-// src/pages/Devices/mock.ts
-
-// Primeiro, definimos a "forma" de um dispositivo usando uma interface do TypeScript.
-// Isso garante que todos os nossos objetos de dispositivo tenham a mesma estrutura.
 export interface Device {
   id: number;
   name: string;
@@ -9,7 +5,7 @@ export interface Device {
   roomName: string; // Adicionando o nome do cômodo para contexto
 }
 
-// Agora, criamos nossa lista de dispositivos falsos
+// Lista de dispositivos falsos
 export const mockDevices: Device[] = [
   { id: 1, name: 'Luz 1', status: 'ON', roomName: 'Quarto' },
   { id: 2, name: 'Siri', status: 'OFF', roomName: 'Quarto' },

@@ -10,10 +10,9 @@ const MAX_DEVICES = 24;
 const DevicesPage = () => {
   const currentRoom = "Quarto Principal";
 
-  // CORREÇÃO: "length" em vez de "lenght"
+
   const initialState = Array.from({ length: MAX_DEVICES }).map((_, index) => mockDevices[index] || null);
-  
-  // Este é nosso único estado para controlar o grid
+
   const [gridSlots, setGridSlots] = useState<(Device | null)[]>(initialState);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -23,8 +22,6 @@ const DevicesPage = () => {
     setSelectedSlotIndex(index);
     setIsAddModalOpen(true);
   };
-
-  // REMOVIDO: O estado [devices, setDevices] não é mais necessário.
 
   const handleAddNewDevice = (name: string, state: 'ON' | 'OFF') => {
     if (selectedSlotIndex === null) return;
@@ -36,7 +33,6 @@ const DevicesPage = () => {
       roomName: currentRoom
     };
     
-    // ATUALIZAÇÃO: Agora atualizamos apenas o estado 'gridSlots'
     setGridSlots(currentSlots => {
       const newSlots = [...currentSlots];
       newSlots[selectedSlotIndex] = newDevice;
@@ -49,7 +45,6 @@ const DevicesPage = () => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        {/* SUGESTÃO: Reutilizando a classe do botão que já existe */}
         <Link to="/home" className={styles.backButtonLink}> 
           &larr; voltar
         </Link>

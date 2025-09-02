@@ -1,7 +1,6 @@
-import { type Device } from '../../pages/Devices/mock'; // Importamos o "molde" de Device
+import { type Device } from '../../pages/Devices/mock';
 import styles from './DeviceItem.module.css';
 
-// Definimos a "forma" das propriedades que nosso componente vai receber
 interface DeviceItemProps {
   device?: Device; 
   onAddClick?: (index: number) => void;

@@ -5,6 +5,24 @@ import Register from './pages/Register';
 import Ambience from './pages/Ambience';
 import Home from './pages/Home';
 
+interface AmbienceData {
+  id: number;
+  name: string;
+}
+
+const App: React.FC = () => {
+  const [ambiences, setAmbiences] = useState<AmbienceData[]>([
+    { id: 1, name: "Sala de Estar" },
+    { id: 2, name: "Cozinha" },
+  ]);
+
+  const [nextId, setNextId] = useState(3);
+
+  const addAmbience = (name: string) => {
+    setAmbiences([...ambiences, { id: nextId, name }]);
+    setNextId(nextId + 1);
+  };
+
 function App() {
   return (
     <BrowserRouter>

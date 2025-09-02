@@ -9,14 +9,13 @@ const MAX_DEVICES = 24;
 
 const DevicesPage = () => {
   const currentRoom = "Quarto Principal";
-
-
   const initialState = Array.from({ length: MAX_DEVICES }).map((_, index) => mockDevices[index] || null);
 
   const [gridSlots, setGridSlots] = useState<(Device | null)[]>(initialState);
-
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
+  const [editingDeviceId, setEditingDeviceId] = useState<number | null>(null);
 
   const handleOpenAddModal = (index: number) => {
     setSelectedSlotIndex(index);
@@ -25,44 +24,70 @@ const DevicesPage = () => {
 
   const handleAddNewDevice = (name: string, state: 'ON' | 'OFF') => {
     if (selectedSlotIndex === null) return;
-
     const newDevice: Device = {
       id: Date.now(),
       name: name,
       status: state,
       roomName: currentRoom
     };
-    
     setGridSlots(currentSlots => {
       const newSlots = [...currentSlots];
       newSlots[selectedSlotIndex] = newDevice;
       return newSlots;
     });
-  
-    setSelectedSlotIndex(null); // Limpa o índice para o próximo clique
+    setSelectedSlotIndex(null);
   };
 
-  /*Função que altera o estado do dispositivo*/
   const handleToggleState = (deviceId: number) => {
     setGridSlots(currentSlots => {
-      // Cria uma nova cópia do array para não modificar o estado diretamente
       const newSlots = [...currentSlots];
-      
-      // Encontra o índice do dispositivo que foi clicado
       const deviceIndex = newSlots.findIndex(slot => slot?.id === deviceId);
-
-      // Se o dispositivo foi encontrado
       if (deviceIndex !== -1 && newSlots[deviceIndex]) {
-        // Cria uma cópia do dispositivo para modificar
         const updatedDevice = { ...newSlots[deviceIndex]! };
-        // Inverte o estado atual
         updatedDevice.status = updatedDevice.status === 'ON' ? 'OFF' : 'ON';
-        // Coloca o dispositivo atualizado de volta no array
         newSlots[deviceIndex] = updatedDevice;
       }
-      
       return newSlots;
     });
+  };
+  
+  const handleDeleteDevice = (deviceId: number) => {
+    setGridSlots(currentSlots => {
+      const newSlots = [...currentSlots];
+      const deviceIndex = newSlots.findIndex(slot => slot?.id === deviceId);
+      if (deviceIndex !== -1) {
+        newSlots[deviceIndex] = null;
+      }
+      return newSlots;
+    });
+    setOpenMenuId(null);
+  };
+
+  const handleMenuClick = (deviceId: number) => {
+    setEditingDeviceId(null);
+    setOpenMenuId(prevId => (prevId === deviceId ? null : deviceId));
+  };
+  
+  const handleRenameDevice = (deviceId: number) => {
+    setEditingDeviceId(deviceId);
+    setOpenMenuId(null);
+  };
+
+  const handleSaveRename = (deviceId: number, newName: string) => {
+    setGridSlots(currentSlots => {
+      const newSlots = [...currentSlots];
+      const deviceIndex = newSlots.findIndex(slot => slot?.id === deviceId);
+      if (deviceIndex !== -1 && newSlots[deviceIndex]) {
+        const updatedDevice = { ...newSlots[deviceIndex]!, name: newName };
+        newSlots[deviceIndex] = updatedDevice;
+      }
+      return newSlots;
+    });
+    setEditingDeviceId(null);
+  };
+
+  const handleCancelRename = () => {
+    setEditingDeviceId(null);
   };
 
   return (
@@ -83,11 +108,19 @@ const DevicesPage = () => {
         <div className={styles.deviceGrid}>
           {gridSlots.map((device, index) => (
             <DeviceItem 
-              key={index}
+              // MUDANÇA: Chave mais robusta
+              key={device ? `device-${device.id}` : `slot-${index}`}
               index={index}
               device={device || undefined}
+              isEditing={editingDeviceId === device?.id}
+              isMenuOpen={openMenuId === device?.id && editingDeviceId !== device?.id}
               onAddClick={handleOpenAddModal}
-              onToggleState={handleToggleState} 
+              onToggleState={handleToggleState}
+              onMenuClick={handleMenuClick}
+              onRename={handleRenameDevice}
+              onDelete={handleDeleteDevice}
+              onSaveRename={handleSaveRename}
+              onCancelRename={handleCancelRename}
             />
           ))}
         </div>

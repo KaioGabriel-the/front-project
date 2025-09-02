@@ -1,0 +1,58 @@
+.gridItem {
+  border: 2px solid #A4A5A6;
+  border-radius: 12px;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.75rem;
+}
+
+.deviceName {
+  background-color: #88F2A2;
+  color: #404040;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 1.1rem;
+  text-align: center;
+  
+  /* Comportamento de truncamento */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  /* --- MUDANÇAS PRINCIPAIS --- */
+  flex: 1; /* 1. Diz para este elemento crescer e ocupar o espaço disponível */
+  min-width: 0; /* 2. Permite que ele encolha abaixo do tamanho do seu conteúdo */
+}
+
+/* Precisamos garantir que o botão não seja espremido */
+.menuButton {
+  background: none;
+  border: none;
+  color: #FFF;
+  font-size: 1.4rem;
+  cursor: pointer;
+  flex-shrink: 0; /* Impede que o botão encolha */
+  margin-left: 0.5rem; /* Adiciona um pequeno espaço */
+}
+
+.addButton {
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: none;
+  color: #A4A5A6;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.addButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #FFF;
+}

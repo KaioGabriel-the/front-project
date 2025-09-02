@@ -100,6 +100,13 @@ const DevicesPage = () => {
       </header>
       
       <main className={styles.mainContent}>
+
+        <div className={styles.legendContainer}>
+          <span>Estado dos dispositivos:</span>
+          <span className={`${styles.legendItem} ${styles.onItem}`}>Ligado</span>
+          <span className={`${styles.legendItem} ${styles.offItem}`}>Desligado</span>
+        </div>
+
         <div className={styles.titleWrapper}>
           <h1>Gerenciar Dispositivos</h1>
           <span>*limite de até 24 dispositivos</span>
@@ -108,7 +115,6 @@ const DevicesPage = () => {
         <div className={styles.deviceGrid}>
           {gridSlots.map((device, index) => (
             <DeviceItem 
-              // MUDANÇA: Chave mais robusta
               key={device ? `device-${device.id}` : `slot-${index}`}
               index={index}
               device={device || undefined}

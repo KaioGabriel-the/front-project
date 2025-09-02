@@ -16,26 +16,21 @@
   font-weight: 500;
   font-size: 1.1rem;
   text-align: center;
-  
-  /* Comportamento de truncamento */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  
-  /* --- MUDANÇAS PRINCIPAIS --- */
-  flex: 1; /* 1. Diz para este elemento crescer e ocupar o espaço disponível */
-  min-width: 0; /* 2. Permite que ele encolha abaixo do tamanho do seu conteúdo */
+  flex: 1; 
+  min-width: 0; 
 }
 
-/* Precisamos garantir que o botão não seja espremido */
 .menuButton {
   background: none;
   border: none;
   color: #FFF;
   font-size: 1.4rem;
   cursor: pointer;
-  flex-shrink: 0; /* Impede que o botão encolha */
-  margin-left: 0.5rem; /* Adiciona um pequeno espaço */
+  flex-shrink: 0;
+  margin-left: 0.5rem;
 }
 
 .addButton {

@@ -1,54 +1,71 @@
-import { useState } from 'react';
-import styles from './AddAmbienteModal.module.css';
+import { useState, useEffect } from "react";
+import styles from "./AddAmbienteModal.module.css";
 
 interface AddAmbienceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string) => void;
+  onSave: (name: string, address: string) => void;
 }
 
-const AddAmbienceModal = ({ isOpen, onClose, onSave }: AddAmbienceModalProps) => {
-  const [ambienceName, setAmbienceName] = useState('');
+const AddAmbienceModal: React.FC<AddAmbienceModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+}) => {
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+
+  // limpa os inputs quando o modal abre/fecha
+  useEffect(() => {
+    if (isOpen) {
+      setName("");
+      setAddress("");
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   const handleSave = () => {
-    if (ambienceName.trim() === '') return; // Ambiente sem nome não passa
-    onSave(ambienceName);
-    handleClose();
-  };
-
-  const handleClose = () => {
-    setAmbienceName('');
+    if (!name.trim() || !address.trim()) return;
+    onSave(name, address);
     onClose();
   };
 
-  if (!isOpen) {
-    return null; // Se não estiver aberto, não renderiza nada
-  }
-
   return (
-    <div className={styles.modalOverlay} onClick={handleClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <h2>Adicionar Novo Ambiente</h2>
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContent}>
+        <h2>Novo Ambiente</h2>
 
         <div className={styles.formGroup}>
-          <label htmlFor="ambienceName">Nome do Ambiente</label>
+          <label htmlFor="name">Nome do Ambiente</label>
           <input
+            id="name"
             type="text"
-            id="ambienceName"
-            value={ambienceName}
-            onChange={(e) => setAmbienceName(e.target.value)}
-            placeholder="Ex: Sala, Escritório, Quarto..."
+            value={name}
+            placeholder="Ex: Sala, Quarto..."
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label htmlFor="address">Endereço</label>
+          <input
+            id="address"
+            type="text"
+            value={address}
+            placeholder="Ex: Rua das Flores, 123"
+            onChange={(e) => setAddress(e.target.value)}
           />
         </div>
 
         <div className={styles.actions}>
-          <button className={styles.cancelBtn} onClick={handleClose}>
+          <button className={styles.cancelBtn} onClick={onClose}>
             Cancelar
           </button>
           <button
             className={styles.saveBtn}
             onClick={handleSave}
-            disabled={!ambienceName.trim()}
+            disabled={!name.trim() || !address.trim()}
           >
             Salvar
           </button>

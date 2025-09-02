@@ -1,0 +1,50 @@
+/* Interactive.module.css */
+
+.interactiveContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.interactiveContainer a {
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+
+.interactiveContainer div {
+    background-color: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+}
+
+.interactiveContainer div:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.interactiveContainer img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+}
+
+.interactiveContainer h2 {
+    padding: 20px;
+    font-size: 20px;
+    color: #458C57;
+    font-weight: 600;
+    transition: color 0.3s ease;
+    margin: 0;
+}
+
+.interactiveContainer div:hover h2 {
+    color: #88F2A2;
+}

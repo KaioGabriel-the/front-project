@@ -1,10 +1,11 @@
+// AmbiencesPage.tsx
 import { useState } from 'react';
 import styles from './Ambience.module.css';
 import AddAmbienceModal from '../../components/AddAmbienteModal';
-import ItemAmbience from "../../components/ItemAmibience";
+import ItemAmbience from "../../components/ItemAmbience/ItemAmbience";
 import { Link } from 'react-router-dom';
 
-const MAX_AMBIENCES = 12; // limite de ambientes (ajuste conforme precisar)
+const MAX_AMBIENCES = 12;
 
 export interface Ambience {
   id: number;
@@ -13,11 +14,13 @@ export interface Ambience {
 
 const AmbiencesPage = () => {
   const initialState = Array.from({ length: MAX_AMBIENCES }).map(() => null);
-
   const [gridSlots, setGridSlots] = useState<(Ambience | null)[]>(initialState);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
 
+  // Adicionar novo ambiente
   const handleOpenAddModal = (index: number) => {
     setSelectedSlotIndex(index);
     setIsAddModalOpen(true);
@@ -26,18 +29,41 @@ const AmbiencesPage = () => {
   const handleAddNewAmbience = (name: string) => {
     if (selectedSlotIndex === null) return;
 
-    const newAmbience: Ambience = {
-      id: Date.now(),
-      name: name,
-    };
-
-    setGridSlots((currentSlots) => {
-      const newSlots = [...currentSlots];
+    const newAmbience: Ambience = { id: Date.now(), name };
+    setGridSlots(slots => {
+      const newSlots = [...slots];
       newSlots[selectedSlotIndex] = newAmbience;
       return newSlots;
     });
 
-    setSelectedSlotIndex(null); // Limpa o índice
+    setSelectedSlotIndex(null);
+    setIsAddModalOpen(false);
+  };
+
+  // Menu de opções
+  const handleRename = (ambienceId: number) => {
+    setEditingId(ambienceId);
+    setMenuOpenId(null);
+  };
+
+  const handleDelete = (ambienceId: number) => {
+    setGridSlots(slots => slots.map(slot => slot?.id === ambienceId ? null : slot));
+    setMenuOpenId(null);
+  };
+
+  const handleSaveRename = (ambienceId: number, newName: string) => {
+    setGridSlots(slots =>
+      slots.map(slot => (slot?.id === ambienceId ? { ...slot, name: newName } : slot))
+    );
+    setEditingId(null);
+  };
+
+  const handleCancelRename = () => {
+    setEditingId(null);
+  };
+
+  const handleMenuClick = (ambienceId: number) => {
+    setMenuOpenId(prev => (prev === ambienceId ? null : ambienceId));
   };
 
   return (
@@ -62,8 +88,15 @@ const AmbiencesPage = () => {
             <ItemAmbience
               key={index}
               index={index}
-              Ambience={ambience || undefined}
+              ambience={ambience || undefined}
+              isEditing={editingId === ambience?.id}
+              isMenuOpen={menuOpenId === ambience?.id}
               onAddClick={handleOpenAddModal}
+              onMenuClick={handleMenuClick}
+              onRename={handleRename}
+              onDelete={handleDelete}
+              onSaveRename={handleSaveRename}
+              onCancelRename={handleCancelRename}
             />
           ))}
         </div>

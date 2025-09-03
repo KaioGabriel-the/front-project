@@ -211,9 +211,11 @@ const DevicesPage = () => {
           ))}
         </div>
       </main>
-
+      
       <footer className={styles.footer}>
-        <a href="#">Ir para criação de cena</a>
+        <Link to="/scene" className={styles.footerLink}>
+          Ir para criação de cena
+        </Link>
       </footer>
 
       <ToastContainer toasts={toasts} onClose={removeToast} />

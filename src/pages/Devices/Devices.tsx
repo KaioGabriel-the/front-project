@@ -6,6 +6,8 @@ import AddDeviceModal from '../../components/AddDeviceModal';
 import DeviceItem from '../../components/DeviceItem';
 import ToastContainer, { type ToastData } from '../../components/ToastContainer';
 
+const API_BASE_URL = 'https://home-automation-control-production.up.railway.app';
+
 const MAX_DEVICES = 24;
 const MAX_TOASTS = 5;
 
@@ -109,28 +111,60 @@ const DevicesPage = () => {
     addToast(`Dispositivo "${name}" adicionado com sucesso!`);
   };
 
-  const handleToggleState = (deviceId: number) => {
+  // -----------------------------
+  // Atualiza ESTADO dos Dispositivos
+  // -----------------------------
+  const handleToggleState = async (deviceId: number) => {
+    // Verifica e inicia o cooldown
     if (cooldownIds.has(deviceId)) return;
-
-    const device = gridSlots.find(d => d?.id === deviceId);
-    if (!device) return;
-
-    const newStatus = device.status === 'ON' ? 'OFF' : 'ON';
     setCooldownIds(prev => new Set(prev).add(deviceId));
 
-    setGridSlots(slots =>
-      slots.map(slot => (slot?.id === deviceId ? { ...slot, status: newStatus } : slot))
-    );
-
-    addToast(`"${device.name}" agora está ${newStatus === 'ON' ? 'ligado' : 'desligado'}`);
-
-    setTimeout(() => {
-      setCooldownIds(prev => {
-        const next = new Set(prev);
-        next.delete(deviceId);
-        return next;
+    try {
+      // Chamada PATCH para a API
+      const response = await fetch(`${API_BASE_URL}/api/devices/${deviceId}/toggle`, {
+        method: 'PATCH',
       });
-    }, 2500);
+
+      if (!response.ok) {
+        // Se a resposta não for de sucesso, lança um erro
+        throw new Error('Falha ao alternar o estado do dispositivo');
+      }
+
+      // Pega o dispositivo atualizado que a API retornou
+      const updatedDeviceFromApi: { id: number; name: string; state: boolean; roomId: number } = await response.json();
+
+      // Atualiza o estado da tela com os dados vindos da API
+      setGridSlots(currentSlots =>
+        currentSlots.map(slot => {
+          if (slot?.id === deviceId) {
+            // Retorna o dispositivo com os dados atualizados, transformando 'state' para 'status'
+            return {
+              ...slot,
+              name: updatedDeviceFromApi.name,
+              status: updatedDeviceFromApi.state ? 'ON' : 'OFF',
+            };
+          }
+          return slot;
+        })
+      );
+      
+      // Mostra o toast de sucesso
+      const newStatus = updatedDeviceFromApi.state ? 'ligado' : 'desligado';
+      addToast(`"${updatedDeviceFromApi.name}" agora está ${newStatus}`);
+
+    } catch (error) {
+      console.error("Erro ao alternar estado:", error);
+      addToast("Erro: Não foi possível atualizar o dispositivo.");
+    } finally {
+      // Remove o dispositivo do cooldown após 2.5s, independentemente de sucesso ou falha
+      setTimeout(() => {
+        setCooldownIds(prev => {
+          const next = new Set(prev);
+          next.delete(deviceId);
+          return next;
+        });
+      }, 2500);
+    }
   };
 
   const handleDeleteDevice = (deviceId: number) => {

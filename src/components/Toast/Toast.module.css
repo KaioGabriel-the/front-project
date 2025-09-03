@@ -1,0 +1,40 @@
+.toast {
+  background-color: #ffffff;
+  color: #404040;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 1rem; 
+  width: 320px; 
+}
+
+.message {
+  margin: 0;
+  padding: 0;
+  font-weight: 500;
+}
+
+.timerBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 5px;
+  background-color: #88F2A2;
+  
+  /* Animação */
+  animation-name: shrink;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+/* Definição da animação: ir de 100% de largura para 0% */
+@keyframes shrink {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}

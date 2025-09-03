@@ -57,7 +57,7 @@ const ScenesPage = () => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <Link to="/cozy" className={styles.backButtonLink}>&larr; voltar</Link>
+        <Link to="/home" className={styles.backButtonLink}>&larr; voltar</Link>
         <p className={styles.pageInfo}>Você está na <strong>página de Cenas</strong></p>
       </header>
 

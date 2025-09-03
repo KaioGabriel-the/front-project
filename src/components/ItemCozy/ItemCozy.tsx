@@ -17,6 +17,7 @@ interface ItemCozyProps {
   onDelete: (cozyId: number) => void;
   onSaveRename: (cozyId: number, newName: string) => void;
   onCancelRename: () => void;
+  onSelect?: () => void; // 🔹 nova prop para clique
 }
 
 const ItemCozy = (props: ItemCozyProps) => {
@@ -33,14 +34,33 @@ const ItemCozy = (props: ItemCozyProps) => {
             autoFocus
             onBlur={(e) => actions.onSaveRename(cozy.id, e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") actions.onSaveRename(cozy.id, (e.target as HTMLInputElement).value);
+              if (e.key === "Enter")
+                actions.onSaveRename(
+                  cozy.id,
+                  (e.target as HTMLInputElement).value
+                );
               if (e.key === "Escape") actions.onCancelRename();
             }}
           />
         ) : (
           <>
-            <div className={styles.cozyName} title={cozy.name}>{cozy.name}</div>
-            <button className={styles.menuButton} onClick={() => actions.onMenuClick?.(cozy.id)}>&#x2261;</button>
+            {/* 🔹 Agora o nome é clicável */}
+            <div
+              className={styles.cozyName}
+              title={cozy.name}
+              onClick={actions.onSelect}
+              style={{ cursor: "pointer" }}
+            >
+              {cozy.name}
+            </div>
+
+            <button
+              className={styles.menuButton}
+              onClick={() => actions.onMenuClick?.(cozy.id)}
+            >
+              &#x2261;
+            </button>
+
             {isMenuOpen && (
               <OptionsMenu
                 onRename={() => actions.onRename(cozy.id)}
@@ -50,7 +70,12 @@ const ItemCozy = (props: ItemCozyProps) => {
           </>
         )
       ) : (
-        <button className={styles.addButton} onClick={() => actions.onAddClick?.(index)}>+</button>
+        <button
+          className={styles.addButton}
+          onClick={() => actions.onAddClick?.(index)}
+        >
+          +
+        </button>
       )}
     </div>
   );

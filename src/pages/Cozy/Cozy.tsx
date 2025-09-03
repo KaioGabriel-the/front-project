@@ -1,8 +1,9 @@
+// CozyPage.tsx
 import { useState, useEffect } from 'react';
 import styles from './Cozy.module.css';
 import AddCozyModal from '../../components/AddCozyModal';
 import ItemCozy from '../../components/ItemCozy';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 
 const MAX_COZYS = 12;
 
@@ -13,13 +14,15 @@ interface Cozy {
 
 const CozyPage = () => {
   const { environmentId } = useParams<{ environmentId: string }>();
+  const navigate = useNavigate();
+
   const [gridSlots, setGridSlots] = useState<(Cozy | null)[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
 
-  // 🔹 Buscar os cômodos da API ao carregar a página
+  // 🔹 Buscar os cômodos do ambiente
   useEffect(() => {
     const fetchCozy = async () => {
       try {
@@ -29,7 +32,6 @@ const CozyPage = () => {
         if (!res.ok) throw new Error('Erro ao buscar cômodos');
         const data: Cozy[] = await res.json();
 
-        // preencher slots com os cômodos vindos da API
         const filledSlots = Array.from({ length: MAX_COZYS }).map((_, i) => data[i] || null);
         setGridSlots(filledSlots);
       } catch (error) {
@@ -40,7 +42,12 @@ const CozyPage = () => {
     if (environmentId) fetchCozy();
   }, [environmentId]);
 
-  // 🔹 Funções locais (ainda funcionam, mas futuramente você pode integrar com API POST/PUT/DELETE)
+  // 🔹 Clique no cômodo → navegar para dispositivos
+  const handleSelectCozy = (cozyId: number) => {
+    navigate(`/devices/${cozyId}`);
+  };
+
+  // 🔹 Funções locais
   const handleOpenAddModal = (index: number) => {
     setSelectedSlotIndex(index);
     setIsAddModalOpen(true);
@@ -49,7 +56,7 @@ const CozyPage = () => {
   const handleAddNewCozy = (name: string) => {
     if (selectedSlotIndex === null) return;
 
-    const newCozy: Cozy = { id: Date.now(), name }; // aqui seria um POST na API
+    const newCozy: Cozy = { id: Date.now(), name };
     setGridSlots(slots => {
       const newSlots = [...slots];
       newSlots[selectedSlotIndex] = newCozy;
@@ -88,7 +95,7 @@ const CozyPage = () => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <Link to="/Ambience" className={styles.backButtonLink}>
+        <Link to="/ambience" className={styles.backButtonLink}>
           &larr; voltar
         </Link>
         <p className={styles.pageInfo}>
@@ -116,13 +123,14 @@ const CozyPage = () => {
               onDelete={handleDelete}
               onSaveRename={handleSaveRename}
               onCancelRename={handleCancelRename}
+              onSelect={() => cozy?.id && handleSelectCozy(cozy.id)} // 🔹 clique vai pros dispositivos
             />
           ))}
         </div>
       </main>
 
       <footer className={styles.footer}>
-        <Link to="/devices">Ir para gerenciamento de dispositivos</Link>
+        <Link to="/ambience">Ir para gerenciamento de ambientes</Link>
       </footer>
 
       <AddCozyModal

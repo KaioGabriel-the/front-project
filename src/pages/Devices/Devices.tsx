@@ -6,6 +6,8 @@ import AddDeviceModal from '../../components/AddDeviceModal';
 import DeviceItem from '../../components/DeviceItem';
 import ToastContainer, { type ToastData } from '../../components/ToastContainer';
 
+const API_BASE_URL = 'https://home-automation-control-production.up.railway.app';
+
 const MAX_DEVICES = 24;
 const MAX_TOASTS = 5;
 
@@ -14,7 +16,7 @@ interface Device {
   name: string;
   status: 'ON' | 'OFF';
   roomId: number;
-  roomName?: string; // opcional para compatibilidade
+  roomName?: string;
 }
 
 const DevicesPage = () => {
@@ -87,57 +89,153 @@ const DevicesPage = () => {
     setIsAddModalOpen(true);
   };
 
-  const handleAddNewDevice = (name: string, status: 'ON' | 'OFF') => {
+  // -----------------------------
+  // Adiciona um novo dispositivo no sistema
+  // -----------------------------
+  const handleAddNewDevice = async (name: string, status: 'ON' | 'OFF') => {
     if (selectedSlotIndex === null || !roomId) return;
 
-    const newDevice: Device = {
-      id: Date.now(),
-      name,
-      status,
+    const isActive = status === 'ON';
+
+    // Preparando o corpo da requisição, como a API espera
+    const newDeviceData = {
+      name: name,
       roomId: Number(roomId),
-      roomName: roomName || `Cômodo ${roomId}`
+      active: isActive
     };
 
-    setGridSlots(slots => {
-      const newSlots = [...slots];
-      newSlots[selectedSlotIndex] = newDevice;
-      return newSlots;
-    });
+    try {
+      // Chamada POST para a API
+      const response = await fetch(`${API_BASE_URL}/api/devices`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newDeviceData),
+      });
 
-    setSelectedSlotIndex(null);
-    setIsAddModalOpen(false);
-    addToast(`Dispositivo "${name}" adicionado com sucesso!`);
+      if (!response.ok) { // A API pode retornar 400 se o limite de 24 for excedido
+        throw new Error('Falha ao criar o dispositivo. Limite excedido?');
+      }
+
+      // Dispositivo completo que a API criou e nos devolveu
+      const createdDeviceFromApi: { id: number; name: string; state: boolean; roomId: number } = await response.json();
+
+      // Atualizando o estado da tela com os dados da API
+      setGridSlots(currentSlots => {
+        const newSlots = [...currentSlots];
+        // Coloca o novo dispositivo no slot que o usuário clicou
+        newSlots[selectedSlotIndex] = {
+          id: createdDeviceFromApi.id,
+          name: createdDeviceFromApi.name,
+          status: createdDeviceFromApi.state ? 'ON' : 'OFF', // Transforma o 'state' da API
+          roomId: createdDeviceFromApi.roomId,
+        };
+        return newSlots;
+      });
+      
+      addToast(`Dispositivo "${createdDeviceFromApi.name}" adicionado com sucesso!`);
+
+    } catch (error) {
+      console.error("Erro ao adicionar dispositivo:", error);
+      addToast("Erro: Não foi possível adicionar o dispositivo.");
+    } finally {
+      // Limpa os estados do modal, independentemente do resultado
+      setSelectedSlotIndex(null);
+      setIsAddModalOpen(false);
+    }
   };
 
-  const handleToggleState = (deviceId: number) => {
+
+  // -----------------------------
+  // Atualiza ESTADO dos Dispositivos
+  // -----------------------------
+  const handleToggleState = async (deviceId: number) => {
+    // Verifica e inicia o cooldown
     if (cooldownIds.has(deviceId)) return;
-
-    const device = gridSlots.find(d => d?.id === deviceId);
-    if (!device) return;
-
-    const newStatus = device.status === 'ON' ? 'OFF' : 'ON';
     setCooldownIds(prev => new Set(prev).add(deviceId));
 
-    setGridSlots(slots =>
-      slots.map(slot => (slot?.id === deviceId ? { ...slot, status: newStatus } : slot))
-    );
-
-    addToast(`"${device.name}" agora está ${newStatus === 'ON' ? 'ligado' : 'desligado'}`);
-
-    setTimeout(() => {
-      setCooldownIds(prev => {
-        const next = new Set(prev);
-        next.delete(deviceId);
-        return next;
+    try {
+      // Chamada PATCH para a API
+      const response = await fetch(`${API_BASE_URL}/api/devices/${deviceId}/toggle`, {
+        method: 'PATCH',
       });
-    }, 2500);
+
+      if (!response.ok) {
+        // Se a resposta não for de sucesso, lança um erro
+        throw new Error('Falha ao alternar o estado do dispositivo');
+      }
+
+      // Pega o dispositivo atualizado que a API retornou
+      const updatedDeviceFromApi: { id: number; name: string; state: boolean; roomId: number } = await response.json();
+
+      // Atualiza o estado da tela com os dados vindos da API
+      setGridSlots(currentSlots =>
+        currentSlots.map(slot => {
+          if (slot?.id === deviceId) {
+            // Retorna o dispositivo com os dados atualizados, transformando 'state' para 'status'
+            return {
+              ...slot,
+              name: updatedDeviceFromApi.name,
+              status: updatedDeviceFromApi.state ? 'ON' : 'OFF',
+            };
+          }
+          return slot;
+        })
+      );
+      
+      // Mostra o toast de sucesso
+      const newStatus = updatedDeviceFromApi.state ? 'ligado' : 'desligado';
+      addToast(`"${updatedDeviceFromApi.name}" agora está ${newStatus}`);
+
+    } catch (error) {
+      console.error("Erro ao alternar estado:", error);
+      addToast("Erro: Não foi possível atualizar o dispositivo.");
+    } finally {
+      // Remove o dispositivo do cooldown após 2.5s, independentemente de sucesso ou falha
+      setTimeout(() => {
+        setCooldownIds(prev => {
+          const next = new Set(prev);
+          next.delete(deviceId);
+          return next;
+        });
+      }, 2500);
+    }
   };
 
-  const handleDeleteDevice = (deviceId: number) => {
-    const deviceToDelete = gridSlots.find(d => d?.id === deviceId);
-    setGridSlots(slots => slots.map(slot => (slot?.id === deviceId ? null : slot)));
-    setOpenMenuId(null);
-    if (deviceToDelete) addToast(`Dispositivo "${deviceToDelete.name}" foi excluído.`);
+  // -----------------------------
+  // EXCLUI Dispositivos
+  // -----------------------------
+  const handleDeleteDevice = async (deviceId: number) => {
+    // Buscando o nome do dispositivo para usar na notificação
+    const deviceToDelete = gridSlots.find(slot => slot?.id === deviceId);
+    const deviceName = deviceToDelete?.name;
+
+    try {
+      // Realizando a chamada DELETE para a API
+      const response = await fetch(`${API_BASE_URL}/api/devices/${deviceId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Falha ao excluir o dispositivo');
+      }
+
+      // Se a API confirmou a exclusão, a tela é atualizada
+      setGridSlots(currentSlots => 
+        currentSlots.map(slot => (slot?.id === deviceId ? null : slot))
+      );
+
+      if (deviceName) {
+        addToast(`Dispositivo "${deviceName}" foi excluído.`);
+      }
+
+    } catch (error) {
+      console.error("Erro ao excluir dispositivo:", error);
+      addToast("Erro: Não foi possível excluir o dispositivo.");
+    } finally {
+      setOpenMenuId(null);
+    }
   };
 
   const handleMenuClick = (deviceId: number) => {
@@ -150,10 +248,59 @@ const DevicesPage = () => {
     setOpenMenuId(null);
   };
 
-  const handleSaveRename = (deviceId: number, newName: string) => {
-    setGridSlots(slots => slots.map(slot => (slot?.id === deviceId ? { ...slot, name: newName } : slot)));
-    setEditingDeviceId(null);
-    addToast(`Dispositivo renomeado para "${newName}"`);
+
+  // -----------------------------
+  // RENOMEIA Dispositivos
+  // -----------------------------
+  const handleSaveRename = async (deviceId: number, newName: string) => {
+    // Encontra o dispositivo para pegar o roomId
+    const deviceToUpdate = gridSlots.find(slot => slot?.id === deviceId);
+    if (!deviceToUpdate) return; // Se não encontrar, não faz nada
+
+    // Prepara o corpo da requisição
+    const body = {
+      name: newName,
+      roomId: deviceToUpdate.roomId,
+      active: deviceToUpdate.status === 'ON'
+    };
+
+    try {
+      // Faz a chamada PUT para a API
+      const response = await fetch(`${API_BASE_URL}/api/devices/${deviceId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        throw new Error('Falha ao renomear o dispositivo');
+      }
+
+      // Pega a resposta da API com os dados atualizados
+      const updatedDeviceFromApi: { id: number; name: string; state: boolean; roomId: number } = await response.json();
+
+      // Atualiz a tela com os dados confirmados pelo servidor
+      setGridSlots(currentSlots =>
+        currentSlots.map(slot => {
+          if (slot?.id === deviceId) {
+            return {
+              ...slot,
+              name: updatedDeviceFromApi.name,
+              status: updatedDeviceFromApi.state ? 'ON' : 'OFF',
+            };
+          }
+          return slot;
+        })
+      );
+      
+      addToast(`Dispositivo renomeado para "${newName}"`);
+
+    } catch (error) {
+      console.error("Erro ao renomear dispositivo:", error);
+      addToast("Erro: Não foi possível renomear o dispositivo.");
+    } finally {
+      setEditingDeviceId(null);
+    }
   };
 
   const handleCancelRename = () => {
@@ -211,9 +358,11 @@ const DevicesPage = () => {
           ))}
         </div>
       </main>
-
+      
       <footer className={styles.footer}>
-        <a href="#">Ir para criação de cena</a>
+        <Link to="/scene" className={styles.footerLink}>
+          Ir para criação de cena
+        </Link>
       </footer>
 
       <ToastContainer toasts={toasts} onClose={removeToast} />

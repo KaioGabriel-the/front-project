@@ -53,18 +53,35 @@ const CozyPage = () => {
     setIsAddModalOpen(true);
   };
 
-  const handleAddNewCozy = (name: string) => {
-    if (selectedSlotIndex === null) return;
+  const handleAddNewCozy = async (name: string) => {
+    if (selectedSlotIndex === null || !environmentId) return;
 
-    const newCozy: Cozy = { id: Date.now(), name };
-    setGridSlots(slots => {
-      const newSlots = [...slots];
-      newSlots[selectedSlotIndex] = newCozy;
-      return newSlots;
-    });
+    try {
+      const response = await fetch(
+        'https://home-automation-control-production.up.railway.app/api/rooms',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, environmentId: Number(environmentId) }),
+        }
+      );
 
-    setSelectedSlotIndex(null);
-    setIsAddModalOpen(false);
+      if (!response.ok) throw new Error(`Erro ao criar cômodo: ${response.statusText}`);
+
+      const newCozy: Cozy = await response.json();
+
+      setGridSlots(slots => {
+        const newSlots = [...slots];
+        newSlots[selectedSlotIndex] = newCozy;
+        return newSlots;
+      });
+
+      setSelectedSlotIndex(null);
+      setIsAddModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      alert('Não foi possível criar o cômodo. Tente novamente.');
+    }
   };
 
   const handleRename = (cozyId: number) => {
@@ -72,17 +89,53 @@ const CozyPage = () => {
     setMenuOpenId(null);
   };
 
-  const handleDelete = (cozyId: number) => {
-    setGridSlots(slots => slots.map(slot => (slot?.id === cozyId ? null : slot)));
-    setMenuOpenId(null);
+  const handleDelete = async (cozyId: number) => {
+    try {
+      const response = await fetch(
+        `https://home-automation-control-production.up.railway.app/api/rooms/${cozyId}`,
+        { method: 'DELETE' }
+      );
+
+      if (!response.ok) throw new Error(`Erro ao deletar: ${response.statusText}`);
+
+      setGridSlots(slots => slots.map(slot => (slot?.id === cozyId ? null : slot)));
+      setMenuOpenId(null);
+    } catch (error) {
+      console.error(error);
+      alert('Não foi possível excluir o cômodo. Tente novamente.');
+    }
   };
 
-  const handleSaveRename = (cozyId: number, newName: string) => {
-    setGridSlots(slots =>
-      slots.map(slot => (slot?.id === cozyId ? { ...slot, name: newName } : slot))
-    );
-    setEditingId(null);
+
+  const handleSaveRename = async (cozyId: number, newName: string) => {
+    if (!environmentId) return;
+
+    try {
+      const response = await fetch(
+        `https://home-automation-control-production.up.railway.app/api/rooms/${cozyId}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newName, environmentId: Number(environmentId) }),
+        }
+      );
+
+      if (!response.ok) throw new Error(`Erro ao renomear: ${response.statusText}`);
+
+      const updatedCozy: Cozy = await response.json();
+
+      setGridSlots(slots =>
+        slots.map(slot => (slot?.id === cozyId ? updatedCozy : slot))
+      );
+
+      setEditingId(null);
+      setMenuOpenId(null);
+    } catch (error) {
+      console.error(error);
+      alert('Não foi possível atualizar o cômodo. Tente novamente.');
+    }
   };
+
 
   const handleCancelRename = () => {
     setEditingId(null);

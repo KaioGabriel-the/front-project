@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import styles from "./ItemAmbience.module.css";
 import OptionsMenu from "../OptionsMenu/OptionsMenu";
 
@@ -21,6 +22,13 @@ interface ItemAmbienceProps {
 
 const ItemAmbience = (props: ItemAmbienceProps) => {
   const { ambience, index, isEditing, isMenuOpen, ...actions } = props;
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (ambience) {
+      navigate(`/ambience/${ambience.id}`);
+    }
+  };
 
   return (
     <div className={styles.gridItem}>
@@ -33,17 +41,18 @@ const ItemAmbience = (props: ItemAmbienceProps) => {
             autoFocus
             onBlur={(e) => actions.onSaveRename(ambience.id, e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                actions.onSaveRename(ambience.id, (e.target as HTMLInputElement).value);
-              }
-              if (e.key === "Escape") {
-                actions.onCancelRename();
-              }
+              if (e.key === "Enter") actions.onSaveRename(ambience.id, (e.target as HTMLInputElement).value);
+              if (e.key === "Escape") actions.onCancelRename();
             }}
           />
         ) : (
           <>
-            <div className={styles.ambienceName} title={ambience.name}>
+            <div
+              className={styles.ambienceName}
+              title={ambience.name}
+              onClick={handleClick}
+              style={{ cursor: "pointer" }} // indica que é clicável
+            >
               {ambience.name}
             </div>
             <button

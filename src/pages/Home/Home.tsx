@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./Home.module.css";
 import Profile from "../../components/Profile";
 import Interactive from "../../components/Interactive";
-import imgAmbience from "../../assets/home_work.png";
+
 
 const Home: React.FC = () => {
     return (
@@ -13,12 +13,7 @@ const Home: React.FC = () => {
                 <Interactive
                     title="Ambientes"
                     linkUrl="/ambience"
-                    imageUrl={imgAmbience}
-                />
-                <Interactive
-                    title="Cenas"
-                    linkUrl="/scene"
-                    imageUrl={imgAmbience}
+                    imageUrl={"https://wallpapers.com/images/featured-full/fundo-da-area-de-trabalho-de-praia-x2m31cw9zoqs7tjv.jpg"}
                 />
             </div>
         </div>

@@ -1,3 +1,6 @@
+/* =====================
+   Layout Geral
+===================== */
 .container {
   padding: 1.5rem 3rem;
   background: #404040;
@@ -14,6 +17,24 @@
   margin-bottom: 1rem;
 }
 
+.pageInfo {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.mainContent {
+  text-align: center;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+/* =====================
+   Botão de voltar
+===================== */
 .backButtonLink {
   background-color: #A4A5A6;
   color: #404040;
@@ -31,18 +52,11 @@
   color: #404040;
 }
 
-.pageInfo {
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.mainContent {
-  text-align: center;
-}
-
+/* =====================
+   Título e Grid
+===================== */
 .titleWrapper {
-  margin-top: 1.5rem;
-  margin-bottom: 2rem;
+  margin: 1.5rem 0 2rem;
 }
 
 .titleWrapper h1 {
@@ -55,7 +69,7 @@
   color: #A4A5A6;
 }
 
-.ambienceGrid {
+.cozyGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 2rem;
@@ -64,12 +78,34 @@
   margin: 0 auto; /* centraliza o grid */
 }
 
-.footer {
-  text-align: center;
-  margin-top: 2rem;
-  padding-bottom: 2rem;
+/* =====================
+   Botões de ações
+===================== */
+.buttonsWrapper {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 20px 0;
 }
 
+.openSceneButton {
+  padding: 10px 15px;
+  background-color: #4caf50;
+  color: #FFF;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.openSceneButton:hover {
+  background-color: #3e8e41;
+}
+
+/* =====================
+   Rodapé
+===================== */
 .footer a {
   color: #FFF;
   text-decoration: none;
@@ -80,6 +116,24 @@
 }
 
 .footer a:hover {
-  background-color: white;
+  background-color: #FFF;
   color: #404040;
+}
+
+/* =====================
+   Botão de expandir (opcional para grid de cômodos)
+===================== */
+.expandButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  color: #404040;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.expandButton:hover {
+  transform: scale(1.2);
+  color: #4caf50;
 }

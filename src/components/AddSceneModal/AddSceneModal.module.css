@@ -1,3 +1,6 @@
+/* ==========================
+   Overlay do Modal
+========================== */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -11,6 +14,9 @@
   z-index: 1000;
 }
 
+/* ==========================
+   Conteúdo do Modal
+========================== */
 .modalContent {
   background-color: #404040;
   padding: 2rem;
@@ -18,17 +24,21 @@
   color: #FFF;
   width: 90%;
   max-width: 500px;
+  max-height: 85vh; /* Evita estourar a tela */
+  overflow-y: auto; /* Scroll se necessário */
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 .modalContent h2 {
   text-align: center;
-  margin-top: 0;
-  margin-bottom: 1.5rem;
+  margin: 0 0 1.5rem 0;
   font-size: 1.4rem;
   font-weight: bold;
 }
 
+/* ==========================
+   Formulários
+========================== */
 .formGroup {
   margin-bottom: 1.75rem;
 }
@@ -50,6 +60,53 @@
   box-sizing: border-box;
 }
 
+/* ==========================
+   Lista de Cômodos
+========================== */
+.roomsList {
+  margin-top: 1rem;
+}
+
+.roomBlock {
+  margin-bottom: 1.2rem;
+  padding: 0.8rem;
+  background: #505050;
+  border-radius: 8px;
+}
+
+.roomHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.roomBlock h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: #A4A5A6;
+}
+
+.roomBlock ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.roomBlock li {
+  margin-bottom: 0.4rem;
+}
+
+.roomBlock label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ==========================
+   Botões de Ação
+========================== */
 .actions {
   display: flex;
   justify-content: flex-end;
@@ -67,7 +124,7 @@
 }
 
 .cancelBtn {
-  background-color: #00000055;
+  background-color: rgba(0, 0, 0, 0.33);
   color: white;
 }
 

@@ -103,7 +103,7 @@ const AmbiencesPage = () => {
       </main>
 
       <footer className={styles.footer}>
-        <a href="#">Ir para gerenciamento de dispositivos</a>
+        <Link to="/home">Ir para o home</Link>
       </footer>
 
       <AddAmbienceModal

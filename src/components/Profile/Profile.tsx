@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Profile.module.css";
-import defaultProfilePic from "../../assets/home_work.png";
+import defaultProfilePic from "../../assets/User-Profile.png";
 
 interface ProfileProps {
     name: string;

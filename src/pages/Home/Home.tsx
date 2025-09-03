@@ -3,6 +3,7 @@ import styles from "./Home.module.css";
 import Profile from "../../components/Profile";
 import Interactive from "../../components/Interactive";
 import imgAmbience from "../../assets/home_work.png";
+import ambiente from "../../assets/Ambiente.jpg";
 
 const Home: React.FC = () => {
     return (
@@ -13,7 +14,7 @@ const Home: React.FC = () => {
                 <Interactive
                     title="Ambientes"
                     linkUrl="/ambience"
-                    imageUrl={imgAmbience}
+                    imageUrl={ambiente}
                 />
                 <Interactive
                     title="Cenas"

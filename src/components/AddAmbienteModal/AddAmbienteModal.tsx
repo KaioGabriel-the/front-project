@@ -42,7 +42,7 @@ const AddAmbienceModal: React.FC<AddAmbienceModalProps> = ({
             id="name"
             type="text"
             value={name}
-            placeholder="Ex: Sala, Quarto..."
+            placeholder="Ex: Casa, Loja..."
             onChange={(e) => setName(e.target.value)}
           />
         </div>

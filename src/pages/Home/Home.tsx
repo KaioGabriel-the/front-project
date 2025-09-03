@@ -12,12 +12,12 @@ const Home: React.FC = () => {
             <div className={styles.cardsSection}>
                 <Interactive
                     title="Ambientes"
-                    linkUrl="/ambientes"
+                    linkUrl="/ambience"
                     imageUrl={imgAmbience}
                 />
                 <Interactive
                     title="Ambientes"
-                    linkUrl="/ambientes"
+                    linkUrl="/ambience"
                     imageUrl={imgAmbience}
                 />
             </div>

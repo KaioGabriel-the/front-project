@@ -1,15 +1,16 @@
 // AmbiencesPage.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './Ambience.module.css';
 import AddAmbienceModal from '../../components/AddAmbienteModal';
 import ItemAmbience from "../../components/ItemAmbience/ItemAmbience";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const MAX_AMBIENCES = 12;
 
 export interface Ambience {
   id: number;
   name: string;
+  address?: string; // opcional, porque a API retorna também
 }
 
 const AmbiencesPage = () => {
@@ -19,8 +20,40 @@ const AmbiencesPage = () => {
   const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
+  const navigate = useNavigate();
 
-  // Adicionar novo ambiente
+  // -----------------------------
+  // Consumir API quando o componente carregar
+  // -----------------------------
+  useEffect(() => {
+    const fetchAmbiences = async () => {
+      try {
+        const response = await fetch(
+          'https://home-automation-control-production.up.railway.app/api/environments'
+        );
+        const data: Ambience[] = await response.json();
+
+        // Preencher os slots com os dados da API
+        setGridSlots(prev => {
+          const newSlots = [...prev];
+          data.forEach((ambience, index) => {
+            if (index < MAX_AMBIENCES) {
+              newSlots[index] = ambience;
+            }
+          });
+          return newSlots;
+        });
+      } catch (error) {
+        console.error('Erro ao carregar ambientes:', error);
+      }
+    };
+
+    fetchAmbiences();
+  }, []);
+
+  // -----------------------------
+  // Funções de adicionar/editar/excluir
+  // -----------------------------
   const handleOpenAddModal = (index: number) => {
     setSelectedSlotIndex(index);
     setIsAddModalOpen(true);
@@ -40,7 +73,6 @@ const AmbiencesPage = () => {
     setIsAddModalOpen(false);
   };
 
-  // Menu de opções
   const handleRename = (ambienceId: number) => {
     setEditingId(ambienceId);
     setMenuOpenId(null);
@@ -66,6 +98,13 @@ const AmbiencesPage = () => {
     setMenuOpenId(prev => (prev === ambienceId ? null : ambienceId));
   };
 
+  const handleSelectAmbience = (ambienceId: number) => {
+    navigate(`/cozy/${ambienceId}`);
+  };
+
+  // -----------------------------
+  // Render
+  // -----------------------------
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -85,19 +124,20 @@ const AmbiencesPage = () => {
 
         <div className={styles.ambienceGrid}>
           {gridSlots.map((ambience, index) => (
-            <ItemAmbience
-              key={index}
-              index={index}
-              ambience={ambience || undefined}
-              isEditing={editingId === ambience?.id}
-              isMenuOpen={menuOpenId === ambience?.id}
-              onAddClick={handleOpenAddModal}
-              onMenuClick={handleMenuClick}
-              onRename={handleRename}
-              onDelete={handleDelete}
-              onSaveRename={handleSaveRename}
-              onCancelRename={handleCancelRename}
-            />
+          <ItemAmbience
+            key={index}
+            index={index}
+            ambience={ambience || undefined}
+            isEditing={editingId === ambience?.id}
+            isMenuOpen={menuOpenId === ambience?.id}
+            onAddClick={handleOpenAddModal}
+            onMenuClick={handleMenuClick}
+            onRename={handleRename}
+            onDelete={handleDelete}
+            onSaveRename={handleSaveRename}
+            onCancelRename={handleCancelRename}
+            onSelect={() => ambience?.id && handleSelectAmbience(ambience.id)}
+          />
           ))}
         </div>
       </main>

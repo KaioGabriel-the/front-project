@@ -18,64 +18,87 @@ interface ItemAmbienceProps {
   onDelete: (ambienceId: number) => void;
   onSaveRename: (ambienceId: number, newName: string) => void;
   onCancelRename: () => void;
+  onSelect?: (ambienceId: number) => void;
 }
 
-const ItemAmbience = (props: ItemAmbienceProps) => {
-  const { ambience, index, isEditing, isMenuOpen, ...actions } = props;
+const ItemAmbience = ({
+  ambience,
+  index,
+  isEditing,
+  isMenuOpen,
+  onAddClick,
+  onMenuClick,
+  onRename,
+  onDelete,
+  onSaveRename,
+  onCancelRename,
+  onSelect,
+}: ItemAmbienceProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
     if (ambience) {
-      navigate(`/ambience/${ambience.id}`);
+      if (onSelect) {
+        onSelect(ambience.id); // permite controle pelo pai
+      } else {
+        navigate(`/ambience/${ambience.id}`); // fallback
+      }
     }
   };
 
-  return (
-    <div className={styles.gridItem}>
-      {ambience ? (
-        isEditing ? (
-          <input
-            className={styles.editInput}
-            type="text"
-            defaultValue={ambience.name}
-            autoFocus
-            onBlur={(e) => actions.onSaveRename(ambience.id, e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") actions.onSaveRename(ambience.id, (e.target as HTMLInputElement).value);
-              if (e.key === "Escape") actions.onCancelRename();
-            }}
-          />
-        ) : (
-          <>
-            <div
-              className={styles.ambienceName}
-              title={ambience.name}
-              onClick={handleClick}
-              style={{ cursor: "pointer" }} // indica que é clicável
-            >
-              {ambience.name}
-            </div>
-            <button
-              className={styles.menuButton}
-              onClick={() => actions.onMenuClick?.(ambience.id)}
-            >
-              &#x2261;
-            </button>
-            {isMenuOpen && (
-              <OptionsMenu
-                onRename={() => actions.onRename(ambience.id)}
-                onDelete={() => actions.onDelete(ambience.id)}
-              />
-            )}
-          </>
-        )
-      ) : (
-        <button
-          className={styles.addButton}
-          onClick={() => actions.onAddClick?.(index)}
-        >
+  if (!ambience) {
+    return (
+      <div className={styles.gridItem}>
+        <button className={styles.addButton} onClick={() => onAddClick?.(index)}>
           +
         </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.gridItem}>
+      {isEditing ? (
+        <input
+          className={styles.editInput}
+          type="text"
+          defaultValue={ambience.name}
+          autoFocus
+          onBlur={(e) => onSaveRename(ambience.id, e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              onSaveRename(ambience.id, (e.target as HTMLInputElement).value);
+            }
+            if (e.key === "Escape") {
+              onCancelRename();
+            }
+          }}
+        />
+      ) : (
+        <>
+          <div
+            className={styles.ambienceName}
+            title={ambience.name}
+            onClick={handleClick}
+            style={{ cursor: "pointer" }}
+          >
+            {ambience.name}
+          </div>
+
+          <button
+            className={styles.menuButton}
+            onClick={() => onMenuClick?.(ambience.id)}
+          >
+            &#x2261;
+          </button>
+
+          {isMenuOpen && (
+            <OptionsMenu
+              onRename={() => onRename(ambience.id)}
+              onDelete={() => onDelete(ambience.id)}
+            />
+          )}
+        </>
       )}
     </div>
   );

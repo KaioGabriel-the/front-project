@@ -7,6 +7,7 @@ import Ambience from './pages/Ambience';
 import Home from './pages/Home';
 import DevicesPage from './pages/Devices/Devices';
 import Cozy from './pages/Cozy/Cozy';
+import Scene from './pages/Scene/Scene';
 
 
 const App: React.FC = () => {
@@ -19,7 +20,8 @@ const App: React.FC = () => {
         <Route path="/home" element={<Home/>} />
         <Route path="/ambience" element={<Ambience/>} />
         <Route path="/devices" element={<DevicesPage />} />
-        <Route path="/cozy" element={<Cozy/>} />
+        <Route path="/cozy" element={<Cozy />} />
+        <Route path="/scene" element={<Scene />} />
       </Routes>
     </BrowserRouter>
   )

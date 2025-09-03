@@ -17,7 +17,7 @@ const Home: React.FC = () => {
                 />
                 <Interactive
                     title="Ambientes"
-                    linkUrl="/ambience"
+                    linkUrl="/scene"
                     imageUrl={imgAmbience}
                 />
             </div>

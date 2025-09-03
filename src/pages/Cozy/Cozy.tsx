@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import styles from './Cozy.module.css';
 import AddCozyModal from '../../components/AddCozyModal';
 import ItemCozy from '../../components/ItemCozy';
@@ -12,32 +13,62 @@ interface Cozy {
 }
 
 const CozyPage = () => {
-  const initialState = Array.from({ length: MAX_COZYS }).map(() => null);
-  const [gridSlots, setGridSlots] = useState<(Cozy | null)[]>(initialState);
+  const { environmentId } = useParams<{ environmentId: string }>(); // pegar ID do ambiente
+  const [gridSlots, setGridSlots] = useState<(Cozy | null)[]>(Array.from({ length: MAX_COZYS }).map(() => null));
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
 
+  // -----------------------------
+  // Buscar cômodos da API
+  // -----------------------------
+  useEffect(() => {
+    if (!environmentId) return;
+
+    const fetchRooms = async () => {
+      try {
+        const response = await fetch(
+          `https://home-automation-control-production.up.railway.app/api/rooms/environment/${environmentId}`
+        );
+        const data: Cozy[] = await response.json();
+
+        setGridSlots(prev => {
+          const newSlots = [...prev];
+          data.forEach((room, index) => {
+            if (index < MAX_COZYS) newSlots[index] = room;
+          });
+          return newSlots;
+        });
+      } catch (error) {
+        console.error('Erro ao carregar cômodos:', error);
+      }
+    };
+
+    fetchRooms();
+  }, [environmentId]);
+
+  // -----------------------------
+  // Funções de adicionar/editar/excluir
+  // -----------------------------
   const handleOpenAddModal = (index: number) => {
     setSelectedSlotIndex(index);
     setIsAddModalOpen(true);
   };
 
   const handleAddNewCozy = (name: string) => {
-  if (selectedSlotIndex === null) return;
+    if (selectedSlotIndex === null) return;
 
-  const newCozy: Cozy = { id: Date.now(), name };
-  setGridSlots(slots => {
-    const newSlots = [...slots];
-    newSlots[selectedSlotIndex] = newCozy;
-    return newSlots;
-  });
+    const newCozy: Cozy = { id: Date.now(), name };
+    setGridSlots(slots => {
+      const newSlots = [...slots];
+      newSlots[selectedSlotIndex] = newCozy;
+      return newSlots;
+    });
 
-  setSelectedSlotIndex(null);
-  setIsAddModalOpen(false);
-};
-
+    setSelectedSlotIndex(null);
+    setIsAddModalOpen(false);
+  };
 
   const handleRename = (cozyId: number) => { setEditingId(cozyId); setMenuOpenId(null); };
   const handleDelete = (cozyId: number) => { setGridSlots(slots => slots.map(slot => slot?.id === cozyId ? null : slot)); setMenuOpenId(null); };
@@ -45,6 +76,9 @@ const CozyPage = () => {
   const handleCancelRename = () => { setEditingId(null); };
   const handleMenuClick = (cozyId: number) => { setMenuOpenId(prev => prev === cozyId ? null : cozyId); };
 
+  // -----------------------------
+  // Render
+  // -----------------------------
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -55,7 +89,7 @@ const CozyPage = () => {
       <main className={styles.mainContent}>
         <div className={styles.titleWrapper}>
           <h1>Gerenciar Cômodos</h1>
-          <span>*limite de até {MAX_COZYS} cozys</span>
+          <span>*limite de até {MAX_COZYS} cômodos</span>
         </div>
 
         <div className={styles.cozyGrid}>
@@ -78,7 +112,7 @@ const CozyPage = () => {
       </main>
 
       <footer className={styles.footer}>
-        <Link to="/devices"><a>Ir para gerenciamento de dispositivos</a></Link>
+        <Link to="/devices">Ir para gerenciamento de dispositivos</Link>
       </footer>
 
       <AddCozyModal

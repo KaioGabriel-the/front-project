@@ -18,6 +18,7 @@ interface ItemAmbienceProps {
   onDelete: (ambienceId: number) => void;
   onSaveRename: (ambienceId: number, newName: string) => void;
   onCancelRename: () => void;
+  onSelect?: () => void;
 }
 
 const ItemAmbience = (props: ItemAmbienceProps) => {
@@ -26,7 +27,7 @@ const ItemAmbience = (props: ItemAmbienceProps) => {
 
   const handleClick = () => {
     if (ambience) {
-      navigate(`/ambience/${ambience.id}`);
+      props.onSelect?.();
     }
   };
 

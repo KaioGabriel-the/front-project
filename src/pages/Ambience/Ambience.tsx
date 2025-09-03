@@ -59,36 +59,101 @@ const AmbiencesPage = () => {
     setIsAddModalOpen(true);
   };
 
-  const handleAddNewAmbience = (name: string) => {
+  const handleAddNewAmbience = async (name: string, address: string = '') => {
     if (selectedSlotIndex === null) return;
 
-    const newAmbience: Ambience = { id: Date.now(), name };
-    setGridSlots(slots => {
-      const newSlots = [...slots];
-      newSlots[selectedSlotIndex] = newAmbience;
-      return newSlots;
-    });
+      try {
+        const response = await fetch(
+          'https://home-automation-control-production.up.railway.app/api/environments',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, address }),
+          }
+        );
 
-    setSelectedSlotIndex(null);
-    setIsAddModalOpen(false);
+        if (!response.ok) {
+          throw new Error(`Erro ao criar ambiente: ${response.statusText}`);
+        }
+
+        const newAmbience: Ambience = await response.json();
+
+        // Atualiza a grid local
+        setGridSlots(slots => {
+          const newSlots = [...slots];
+          newSlots[selectedSlotIndex] = newAmbience;
+          return newSlots;
+        });
+
+        setSelectedSlotIndex(null);
+        setIsAddModalOpen(false);
+
+      } catch (error) {
+        console.error(error);
+        alert('Não foi possível criar o ambiente. Tente novamente.');
+      }
+    };
+
+
+    const handleRename = (ambienceId: number) => {
+      setEditingId(ambienceId);
+      setMenuOpenId(null);
+    };
+
+   const handleSaveRename = async (ambienceId: number, newName: string, newAddress: string = '') => {
+    try {
+      const response = await fetch(
+        `https://home-automation-control-production.up.railway.app/api/environments/${ambienceId}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newName, address: newAddress }),
+        }
+      );
+
+      if (!response.ok) throw new Error(`Erro ao atualizar: ${response.statusText}`);
+
+      const updatedAmbience: Ambience = await response.json();
+
+      // Atualiza a grid local
+      setGridSlots(slots =>
+        slots.map(slot => (slot?.id === ambienceId ? updatedAmbience : slot))
+      );
+
+      setEditingId(null);
+      setMenuOpenId(null);
+
+    } catch (error) {
+      console.error(error);
+      alert('Não foi possível atualizar o ambiente. Tente novamente.');
+    }
   };
 
-  const handleRename = (ambienceId: number) => {
-    setEditingId(ambienceId);
-    setMenuOpenId(null);
+
+    const handleDelete = async (ambienceId: number) => {
+    try {
+      const response = await fetch(
+        `https://home-automation-control-production.up.railway.app/api/environments/${ambienceId}`,
+        {
+          method: 'DELETE',
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erro ao deletar: ${response.statusText}`);
+      }
+
+      // Atualiza o estado local apenas se a API deletou com sucesso
+      setGridSlots(slots => slots.map(slot => slot?.id === ambienceId ? null : slot));
+      setMenuOpenId(null);
+    } catch (error) {
+      console.error('Erro ao deletar ambiente:', error);
+      alert('Não foi possível excluir o ambiente. Tente novamente.');
+    }
   };
 
-  const handleDelete = (ambienceId: number) => {
-    setGridSlots(slots => slots.map(slot => slot?.id === ambienceId ? null : slot));
-    setMenuOpenId(null);
-  };
-
-  const handleSaveRename = (ambienceId: number, newName: string) => {
-    setGridSlots(slots =>
-      slots.map(slot => (slot?.id === ambienceId ? { ...slot, name: newName } : slot))
-    );
-    setEditingId(null);
-  };
 
   const handleCancelRename = () => {
     setEditingId(null);

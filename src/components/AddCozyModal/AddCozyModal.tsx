@@ -25,10 +25,10 @@ const AddCozyModal: React.FC<AddCozyModalProps> = ({ isOpen, onClose, onSave }) 
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <h2>Novo Cozy</h2>
+        <h2>Novo Cômodo</h2>
 
         <div className={styles.formGroup}>
-          <label htmlFor="name">Nome do Cozy</label>
+          <label htmlFor="name">Nome do Cômodo</label>
           <input
             id="name"
             type="text"

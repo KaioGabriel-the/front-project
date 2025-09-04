@@ -13,7 +13,6 @@ const Home: React.FC = () => {
                 <Interactive
                     title="Ambientes"
                     linkUrl="/ambience"
-                    imageUrl={"https://wallpapers.com/images/featured-full/fundo-da-area-de-trabalho-de-praia-x2m31cw9zoqs7tjv.jpg"}
                 />
             </div>
         </div>

@@ -21,7 +21,7 @@ const App: React.FC = () => {
         <Route path="/ambience" element={<Ambience/>} />
         <Route path="/devices/:roomId" element={<DevicesPage />} />
         <Route path="/cozy/:environmentId" element={<Cozy />} />
-        <Route path="/scene" element={<Scene />} />
+        <Route path="/scenes/:environmentId" element={<Scene />} />
       </Routes>
     </BrowserRouter>
   )

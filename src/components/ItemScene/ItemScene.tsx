@@ -1,6 +1,6 @@
 import styles from "./ItemScene.module.css";
 import OptionsMenu from "../OptionsMenu/OptionsMenu";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 export interface Scene {
   id: number;
@@ -22,13 +22,13 @@ interface ItemSceneProps {
 
 const ItemScene = (props: ItemSceneProps) => {
   const { scene, index, isEditing, isMenuOpen, ...actions } = props;
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const handleSceneClick = () => {
-    if (scene && !isEditing && !isMenuOpen) {
-      navigate(`/scene/${scene.id}`);
-    }
-  };
+  // const handleSceneClick = () => {
+  //   if (scene && !isEditing && !isMenuOpen) {
+  //     navigate(`/scene/${scene.id}`);
+  //   }
+  // };
 
   return (
     <div className={styles.gridItem}>
@@ -50,8 +50,8 @@ const ItemScene = (props: ItemSceneProps) => {
             <div
               className={styles.sceneName}
               title={scene.name}
-              onClick={handleSceneClick} // clique na cena
-              style={{ cursor: "pointer" }}
+              // onClick={handleSceneClick} // clique na cena
+              // style={{ cursor: "pointer" }}
             >
               {scene.name}
             </div>
